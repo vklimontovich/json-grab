@@ -1,6 +1,6 @@
 # Grab
 
-Grab Node JS library for calling JSON-based HTTP-apis. Grab wraps `fetch()` and takes care about JSON serialization / deserialization and error handling
+Grab Node JS library for calling JSON-based HTTP API. Grab wraps `fetch()` and takes care of JSON serialization/deserialization and error handling.
 
 ## Installation
 
@@ -8,11 +8,17 @@ Grab Node JS library for calling JSON-based HTTP-apis. Grab wraps `fetch()` and 
 
 ## Example
 
-Using fetch
+With `fetch`:
 
-```javascript
+```typescript
 async function getDataFromServer() {
-    const result = await fetch(url, {method: "POST", body: JSON.stringify(body)}
+    const result = await fetch(url + `?${param}=${value}`, {
+      method: "POST", 
+      body: JSON.stringify(body), 
+      headers: {
+        "Content-Type": "application/json", 
+        "Accept": "application/json"}
+    });
     if (!result.ok) {
        throw new Error(`Can't post data to ${url} - ${result.statusText}`)
     }
@@ -20,43 +26,48 @@ async function getDataFromServer() {
 }
 ```
 
-Using grab
+With `grab`:
 
-```javascript
+```typescript
 async function getDataFromServer() {
-   return await grab(url, { body })
+   return await grab(url, { body, query: {param: "value"} })
 }
 ```
 
-## NodeJS vs Browser
+## Works in NodeJS  Browser
 
-`grab` works in Browser and NodeJS. For node JS you need to provide a fetch implementation:
+`grab` works in Browser without additional configuration. In NodeJS you need to provide `fetch` implementation. For example, you can use `node-fetch`:
 
-```
+```javascript
 import fetch from 'node-fetch';
 import grab from 'json-grap';
 
 grab.setup({fetch})
-
 ```
 
-
-
-## Feaures
+## Features
 
 * *API compatibility*. Grab API is compatible with fetch 
-* *Smart defaults*. For example, you don't need to set an HTTP method if you set a request body. Grab is smart enough 
+* *Smart defaults*. For example, you don't need to set an HTTP method if you set a request body. Grab is smart enough to set `POST` method in this case. Also, 
+it sets `Content-Type` and `Accept` headers to `application/json` automatically
 * *Error handling*. Excellent error handling with detailed, clear error messages
-* *Timeouts*. Grab can handle timeouts: `await grab(url, { body, timeoutMs: 2000 })`
-* 
+* *No more string concatenation for URLs params*. Use: `grab(url, {query: {a: 1, b: 2}})`
 
 ## Future features
 
+### Timeouts
+
+```typescript
+await grab(url, { body, timeoutMs: 2000 })
+```
+
 ### Templates
 
-```
+```typescript
 import fetch from 'cross-fetch';
 
 const myGrab = grab.template({headers: {'Authorization': `Bearer XXXX`}, fetchImpl: fetch })
+//no need to set authorization header for each request
+const result = await myGrab(url, { body })
 ```
 
