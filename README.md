@@ -34,7 +34,7 @@ async function getDataFromServer() {
 }
 ```
 
-## Works in NodeJS  Browser
+## Works in NodeJS & Browser
 
 `grab` works in Browser without additional configuration. In NodeJS you need to provide `fetch` implementation. For example, you can use `node-fetch`:
 
